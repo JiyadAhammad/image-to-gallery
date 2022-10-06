@@ -4,8 +4,8 @@ part 'dbmodel.g.dart';
 
 @HiveType(typeId: 0)
 class Gallery extends HiveObject {
-  @HiveField(0)
-  final String? imagePath;
 
   Gallery({this.imagePath});
+  @HiveField(0)
+  final String? imagePath;
 }

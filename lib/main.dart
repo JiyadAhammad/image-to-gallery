@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
 
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:imagegallery/database/dbmodel.dart';
-import 'package:imagegallery/screen/homescreen.dart';
+import 'database/dbmodel.dart';
+import 'screen/homescreen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +13,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {

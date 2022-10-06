@@ -1,35 +1,35 @@
 import 'dart:io';
 import 'package:add_to_gallery/add_to_gallery.dart';
-import 'package:hive_flutter/adapters.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:imagegallery/database/dbmodel.dart';
-import 'package:imagegallery/screen/displayscrren.dart';
 
-final flutter = 'flutter';
+import '../database/dbmodel.dart';
+import 'displayscrren.dart';
+
+const String flutter = 'flutter';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   int count = 1;
   XFile? imageFile;
 
-  chooseImage(ImageSource src) async {
-    final pickedFile = await ImagePicker().pickImage(source: src);
-    XFile imageFile =XFile(pickedFile!.path);
-    
-     File file = File(pickedFile.path);
-      await AddToGallery.addToGallery(
-     deleteOriginalFile: false,
-      originalFile: file,
-      albumName: flutter,);
+  Future<void> chooseImage(ImageSource src) async {
+    final XFile? pickedFile = await ImagePicker().pickImage(source: src);
+    XFile imageFile = XFile(pickedFile!.path);
 
-        
+    final File file = File(pickedFile.path);
+    await AddToGallery.addToGallery(
+      deleteOriginalFile: false,
+      originalFile: file,
+      albumName: flutter,
+    );
 
     setState(
       () {
@@ -53,10 +53,10 @@ class _HomeScreenState extends State<HomeScreen> {
         centerTitle: true,
         elevation: 10,
       ),
-      body: ValueListenableBuilder(
+      body: ValueListenableBuilder<Box<Gallery>>(
         valueListenable: Hive.box<Gallery>('gallery').listenable(),
-        builder: (context, Box<Gallery> box, widget) {
-          List keys = box.keys.toList();
+        builder: (BuildContext context, Box<Gallery> box, Widget? _) {
+          final List<dynamic> keys = box.keys.toList();
           if (keys.isEmpty) {
             return const Center(
               child: Text(
@@ -69,16 +69,15 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(10),
               gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                   maxCrossAxisExtent: 160,
-                  childAspectRatio: 1,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10),
-              itemBuilder: ((context, index) {
-                List<Gallery> data = box.values.toList();
+              itemBuilder: (BuildContext context, int index) {
+                final List<Gallery> data = box.values.toList();
                 return GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => DisplayImage(
+                      MaterialPageRoute<dynamic>(
+                        builder: (BuildContext context) => DisplayImage(
                           image: data[index].imagePath,
                           index: index,
                         ),
@@ -88,9 +87,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   onLongPress: () {
                     showDialog(
                       context: context,
-                      builder: (context) => AlertDialog(
+                      builder: (BuildContext context) => AlertDialog(
                         content: const Text('Do you want to delete the image?'),
-                        actions: [
+                        actions: <Widget>[
                           TextButton(
                             onPressed: () {
                               Navigator.pop(context);
@@ -111,10 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Container(
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                          color: Colors.white,
-                          width: 0.5,
-                          style: BorderStyle.solid),
+                      border: Border.all(color: Colors.white, width: 0.5),
                       image: DecorationImage(
                         fit: BoxFit.cover,
                         image: FileImage(
@@ -126,7 +122,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 );
-              }),
+              },
               itemCount: keys.length,
             );
           }
@@ -135,7 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           chooseImage(ImageSource.camera);
-         },
+        },
         child: const Icon(Icons.camera_alt),
       ),
     );
